@@ -15,3 +15,12 @@
 ### <a href="https://discord.gg/MgVaazZ">`Menudocs Discord`</a>
 
 ### <a href="https://www.youtube.com/menudocs">`Youtube Link`</a>
+
+---
+## Episode List
+
+> For those of you who not wanting to go through the effort of changing branches.
+> This list may be a couple episodes behind so refer to branches for further episodes!
+
+- <a href="https://github.com/MenuDocs/Discord.PY-Tutorials/tree/Episode-1">`Episode One`</a>
+- <a href="https://github.com/MenuDocs/Discord.PY-Tutorials/tree/Episode-2">`Episode Two`</a>
