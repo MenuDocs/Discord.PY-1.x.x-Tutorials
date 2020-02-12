@@ -1,5 +1,17 @@
-# discord.py
+# Rewrite Bot
 
-Repo for the [DPY turorials](https://www.youtube.com/menudocs) on [MenuDocs](https://www.youtube.com/channel/UCpGGFqJP9vYvzFudqnQ-6IA)
+> Each episode has its own branch in this repo.
 
-[![Discord server](https://discordapp.com/api/guilds/416512197590777857/embed.png?style=banner4)](https://discord.gg/MgVaazZ)
+[![Build Status](http://img.shields.io/travis/badges/badgerbadgerbadger.svg?style=flat-square)](https://travis-ci.org/badges/badgerbadgerbadger)
+
+###Don't know how to do that? Simple, click the following link.
+
+<a href="https://help.github.com/en/github/administering-a-repository/viewing-branches-in-your-repository">**How to change github branches**</a>
+
+---
+
+##Support
+
+###<a href="https://discord.gg/MgVaazZ">`Menudocs Discord`</a>
+
+###<a href="https://www.youtube.com/menudocs">`Youtube Link`</a>
