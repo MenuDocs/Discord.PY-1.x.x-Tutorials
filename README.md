@@ -20,6 +20,7 @@
 ## Episode List
 
 > For those of you who not wanting to go through the effort of changing branches.
+
 > This list may be a couple episodes behind so refer to branches for further episodes!
 
 - <a href="https://github.com/MenuDocs/Discord.PY-Tutorials/tree/Episode-1">`Episode One`</a>
