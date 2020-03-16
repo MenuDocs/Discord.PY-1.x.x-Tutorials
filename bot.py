@@ -5,23 +5,27 @@ import json # For interacting with json
 from pathlib import Path # For paths
 import platform # For stats
 import logging
+import json
 
-#Get current working directory
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
 print(f"{cwd}\n-----")
 
 #Defining a few things
 secret_file = json.load(open(cwd+'/bot_config/secrets.json'))
-bot = commands.Bot(command_prefix='-', case_insensitive=True)#, owner_id=271612318947868673)
+bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_id=271612318947868673)
 bot.config_token = secret_file['token']
 logging.basicConfig(level=logging.INFO)
 
-bot.version = '3'
+bot.version = '0.0.4'
+
+bot.blacklisted_users = []
 
 @bot.event
 async def on_ready():
     print(f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: -\n-----")
+    data = read_json("blacklist")
+    bot.blacklisted_users = data["blacklistedUsers"]
     await bot.change_presence(activity=discord.Game(name=f"Hi, my names {bot.user.name}.\nUse - to interact with me!")) # This changes the bots 'activity'
 
 @bot.event
@@ -31,7 +35,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, ignored):
         return
 
-    #Begin error handling
+    #Begin actual error handling
     if isinstance(error, commands.CommandOnCooldown):
         m, s = divmod(error.retry_after, 60)
         h, m = divmod(m, 60)
@@ -45,12 +49,42 @@ async def on_command_error(ctx, error):
         await ctx.send("Hey! You lack permission to use this command.")
     raise error
 
-@bot.command(name='hi', aliases=['hello'])
-async def _hi(ctx):
-    """
-    A simple command which says hi to the author.
-    """
-    await ctx.send(f"Hi {ctx.author.mention}!")
+@bot.event
+async def on_message(message):
+    #ignore ourselves
+    if message.author.id == bot.user.id:
+        return
+
+    #blacklist system
+    if message.author.id in bot.blacklisted_users:
+        return
+
+    if message.content.lower().startswith("help"):
+        await message.channel.send("Hey! Why don't you run the help command with `-help`")
+
+    #await bot.process_commands(message)
+
+@bot.command()
+@commands.is_owner()
+async def blacklist(ctx, user: discord.Member):
+    if ctx.message.author.id == user.id:
+        await ctx.send("Hey, you cannot blacklist yourself!")
+        return
+
+    bot.blacklisted_users.append(user.id)
+    data = read_json("blacklist")
+    data["blacklistedUsers"].append(user.id)
+    write_json(data, "blacklist")
+    await ctx.send(f"Hey, I have blacklisted {user.name} for you.")
+
+@bot.command()
+@commands.is_owner()
+async def unblacklist(ctx, user: discord.Member):
+    bot.blacklisted_users.remove(user.id)
+    data = read_json("blacklist")
+    data["blacklistedUsers"].remove(user.id)
+    write_json(data, "blacklist")
+    await ctx.send(f"Hey, I have unblacklisted {user.name} for you.")
 
 @bot.command()
 async def stats(ctx):
@@ -94,4 +128,13 @@ async def echo(ctx, *, message=None):
     await ctx.message.delete()
     await ctx.send(message)
 
-bot.run(bot.config_token) #Runs our bot
+def read_json(filename):
+    with open(f"{cwd}/bot_config/{filename}.json", "r") as file:
+        data = json.load(file)
+    return data
+
+def write_json(data, filename):
+    with open(f"{cwd}/bot_config/{filename}.json", "w") as file:
+        json.dump(data, file, indent=4)
+
+bot.run(bot.config_token) # Runs our bot
