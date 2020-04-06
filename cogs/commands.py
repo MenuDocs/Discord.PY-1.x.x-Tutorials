@@ -58,6 +58,9 @@ class Commands(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def blacklist(self, ctx, user: discord.Member):
+        """
+        Blacklist someone from the bot
+        """
         if ctx.message.author.id == user.id:
             await ctx.send("Hey, you cannot blacklist yourself!")
             return
@@ -71,11 +74,27 @@ class Commands(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def unblacklist(self, ctx, user: discord.Member):
+        """
+        Unblacklist someone from the bot
+        """
         self.bot.blacklisted_users.remove(user.id)
         data = cogs._json.read_json("blacklist")
         data["blacklistedUsers"].remove(user.id)
         cogs._json.write_json(data, "blacklist")
         await ctx.send(f"Hey, I have unblacklisted {user.name} for you.")
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    async def prefix(self, ctx, *, pre='-'):
+        """
+        Set a custom prefix for a guild
+        """
+        data = cogs._json.read_json('prefixes')
+        data[str(ctx.message.guild.id)] = pre
+        cogs._json.write_json(data, 'prefixes')
+        await ctx.send(f"The guild prefix has been set to `{pre}`. Use `{pre}prefix <prefix>` to change it again!")
+
 
 def setup(bot):
     bot.add_cog(Commands(bot))

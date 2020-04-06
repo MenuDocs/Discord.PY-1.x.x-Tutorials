@@ -7,20 +7,28 @@ import logging
 import datetime
 import os
 
+import cogs._json
+
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
 print(f"{cwd}\n-----")
 
+def get_prefix(bot, message):
+    data = cogs._json.read_json('prefixes')
+    if not str(message.guild.id) in data:
+        return commands.when_mentioned_or('-')(bot, message)
+    return commands.when_mentioned_or(data[str(message.guild.id)])(bot, message)
+
 #Defining a few things
 secret_file = json.load(open(cwd+'/bot_config/secrets.json'))
-bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_id=271612318947868673)
+bot = commands.Bot(command_prefix=get_prefix, case_insensitive=True, owner_id=271612318947868673)
 bot.config_token = secret_file['token']
 logging.basicConfig(level=logging.INFO)
 
 bot.blacklisted_users = []
 bot.cwd = cwd
 
-bot.version = '5'
+bot.version = '6'
 
 bot.colors = {
   'WHITE': 0xFFFFFF,
@@ -60,6 +68,16 @@ async def on_message(message):
     #A way to blacklist users from the bot by not processing commands if the author is in the blacklisted_users list
     if message.author.id in bot.blacklisted_users:
         return
+
+    #Whenever the bot is tagged, respond with its prefix
+    if f"<@!{bot.user.id}>" in message.content:
+        data = cogs._json.read_json('prefixes')
+        if str(message.guild.id) in data:
+            prefix = data[str(message.guild.id)]
+        else:
+            prefix = '-'
+        prefixMsg = await message.channel.send(f"My prefix here is `{prefix}`")
+        await prefixMsg.add_reaction('👀')
 
     await bot.process_commands(message)
 
