@@ -1,27 +1,35 @@
-# Discord.Py Tutorials
+<div align="center">
+  <h1>Discord.Py Tutorials</h1>
+  <a href="https://discord.gg/MgVaazZ">
+    <img src="https://discordapp.com/api/guilds/416512197590777857/embed.png" alt="Discord" />
+  </a>
+</div>
 
-[![Build Status](http://img.shields.io/travis/badges/badgerbadgerbadger.svg?style=flat-square)](https://travis-ci.org/badges/badgerbadgerbadger)
+## About
+
+Repository for the [Discord.py Turorials](https://www.youtube.com/watch?v=tyRMklcm2oA&list=PLWnw41ah3I4Z3pJ3_IzohfSu4A1x37KeE) series on [MenuDocs](https://www.youtube.com/channel/UCpGGFqJP9vYvzFudqnQ-6IA).
 
 > Each episode has its own branch in this repo.
 
 ### Don't know how to do that? Simple, click the following link.
+[click me](https://help.github.com/en/github/administering-a-repository/viewing-branches-in-your-repository)
 
-<a href="https://help.github.com/en/github/administering-a-repository/viewing-branches-in-your-repository">**How to change github branches**</a>
+Click on the branch-selector button located here:
+
+![Branch Selector](https://i.imgur.com/JLfMM19.png)
+
+Select the desired episode's source code:
+
+![Branch Selector Depth 1](https://i.imgur.com/AHQBA2k.png)
+
+Once you've selected a branch, you can browse through the files available:
 
 ---
 
-## Support
+## Support:
 
 ### <a href="https://discord.gg/MgVaazZ">`Menudocs Discord`</a>
 
 ### <a href="https://www.youtube.com/menudocs">`Youtube Link`</a>
 
----
-## Episode List
 
-> For those of you who not wanting to go through the effort of changing branches.
-
-> This list may be a couple episodes behind so refer to branches for further episodes!
-
-- <a href="https://github.com/MenuDocs/Discord.PY-Tutorials/tree/Episode-1">`Episode One`</a>
-- <a href="https://github.com/MenuDocs/Discord.PY-Tutorials/tree/Episode-2">`Episode Two`</a>
