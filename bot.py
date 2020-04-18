@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO)
 bot.blacklisted_users = []
 bot.cwd = cwd
 
-bot.version = '6'
+bot.version = '7'
 
 bot.colors = {
   'WHITE': 0xFFFFFF,
