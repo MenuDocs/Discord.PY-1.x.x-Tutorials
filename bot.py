@@ -11,7 +11,7 @@ import motor.motor_asyncio
 from discord.ext import commands
 
 # Local code
-import utils.json
+import utils.json_loader
 from utils.mongo import Document
 
 cwd = Path(__file__).parents[0]
@@ -36,7 +36,7 @@ async def get_prefix(bot, message):
 
 
 # Defining a few things
-secret_file = json.load(open(cwd + "/bot_config/secrets.json"))
+secret_file = utils.json_loader.read_json('secrets')
 bot = commands.Bot(
     command_prefix=get_prefix, case_insensitive=True, owner_id=271612318947868673
 )
@@ -124,5 +124,5 @@ if __name__ == "__main__":
     for file in os.listdir(cwd + "/cogs"):
         if file.endswith(".py") and not file.startswith("_"):
             bot.load_extension(f"cogs.{file[:-3]}")
-            
+
     bot.run(bot.config_token)

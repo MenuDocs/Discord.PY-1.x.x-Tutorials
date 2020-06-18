@@ -3,8 +3,6 @@ import platform
 import discord
 from discord.ext import commands
 
-import utils.json
-
 
 class Misc(commands.Cog):
     def __init__(self, bot):

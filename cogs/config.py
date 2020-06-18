@@ -3,7 +3,7 @@ import random
 import discord
 from discord.ext import commands
 
-import utils.json
+import utils.json_loader
 
 
 class Config(commands.Cog):
@@ -51,9 +51,9 @@ class Config(commands.Cog):
             return
 
         self.bot.blacklisted_users.append(user.id)
-        data = utils.json.read_json("blacklist")
+        data = utils.json_loader.read_json("blacklist")
         data["blacklistedUsers"].append(user.id)
-        utils.json.write_json(data, "blacklist")
+        utils.json_loader.write_json(data, "blacklist")
         await ctx.send(f"Hey, I have blacklisted {user.name} for you.")
 
     @commands.command(
@@ -67,9 +67,9 @@ class Config(commands.Cog):
         Unblacklist someone from the bot
         """
         self.bot.blacklisted_users.remove(user.id)
-        data = utils.json.read_json("blacklist")
+        data = utils.json_loader.read_json("blacklist")
         data["blacklistedUsers"].remove(user.id)
-        utils.json.write_json(data, "blacklist")
+        utils.json_loader.write_json(data, "blacklist")
         await ctx.send(f"Hey, I have unblacklisted {user.name} for you.")
 
     @commands.command(
