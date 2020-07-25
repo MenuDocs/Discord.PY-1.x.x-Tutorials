@@ -1,5 +1,25 @@
+import re
+
+import asyncio
 import discord
 from discord.ext import commands
+
+time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {'h': 3600, 's': 1, 'm': 60, 'd': 86400}
+
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        args = argument.lower()
+        matches = re.findall(time_regex, args)
+        time = 0
+        for key, value in matches:
+            try:
+                time += time_dict[value] * float(key)
+            except KeyError:
+                raise commands.BadArgument(f"{value} is an invalid time key! h|m|s|d are valid arguments")
+            except ValueError:
+                raise commands.BadArgument(f"{key} is not a number!")
+        return time
 
 
 class Moderation(commands.Cog):
@@ -73,6 +93,45 @@ class Moderation(commands.Cog):
         )
         await ctx.send(embed=embed, delete_after=15)
 
+    @commands.command(
+        name='mute',
+        description="Mutes a given user for x time!",
+        ussage='<user> [time]'
+    )
+    #@commands.has_permissions(manage_roles=True)
+    async def mute(self, ctx, member: discord.Member, *, time: TimeConverter=None):
+        role = discord.utils.get(ctx.guild.roles, name="Muted")
+        if not role:
+            await ctx.send("No muted role was found! Please create one called `Muted`")
+            return
+
+        await member.add_roles(role)
+        await ctx.send((f"Muted `{member.display_name}` for {time}s." if time else f"Muted `{member.display_name}`."))
+
+        if time:
+            await asyncio.sleep(time)
+
+            if role in member.roles:
+                await member.remove_roles(role)
+                await ctx.send(f"Unmuted `{member.display_name}`")
+
+    @commands.command(
+        name='unmute',
+        description="Unmuted a member!",
+        usage='<user>'
+    )
+    #@commands.has_permissions(manage_roles=True)
+    async def unmute(self, ctx, member: discord.Member):
+        role = discord.utils.get(ctx.guild.roles, name="Muted")
+        if not role:
+            await ctx.send("No muted role was found! Please create one called `Muted`")
+            return
+
+        if role not in member.roles:
+            await ctx.send("This member is not muted.")
+
+        await member.remove_roles(role)
+        await ctx.send(f"Unmuted `{member.display_name}`")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
