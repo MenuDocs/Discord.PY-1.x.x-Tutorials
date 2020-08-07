@@ -1,8 +1,6 @@
 # Standard libraries
 import os
-import json
 import logging
-import datetime
 
 # Third party libraries
 import discord
@@ -36,18 +34,19 @@ async def get_prefix(bot, message):
 
 
 # Defining a few things
-secret_file = utils.json_loader.read_json('secrets')
+secret_file = utils.json_loader.read_json("secrets")
 bot = commands.Bot(
-    command_prefix='-', case_insensitive=True, owner_id=271612318947868673
-) # change command_prefix='-' to command_prefix=get_prefix for custom prefixes
+    command_prefix="-", case_insensitive=True, owner_id=271612318947868673
+)  # change command_prefix='-' to command_prefix=get_prefix for custom prefixes
 bot.config_token = secret_file["token"]
 bot.connection_url = secret_file["mongo"]
 logging.basicConfig(level=logging.INFO)
 
 bot.blacklisted_users = []
+bot.muted_users = {}
 bot.cwd = cwd
 
-bot.version = "10"
+bot.version = "14"
 
 bot.colors = {
     "WHITE": 0xFFFFFF,
@@ -72,21 +71,6 @@ bot.colors = {
 }
 bot.color_list = [c for c in bot.colors.values()]
 
-@bot.command(name='perms', aliases=['perms_for', 'permissions', 'userperms'])
-@commands.guild_only()
-async def check_permissions(ctx, member: discord.Member=None):
-    """A simple command which checks a members Guild Permissions.
-    If member is not provided, the author will be checked."""
-    if not member:
-        member = ctx.author
-    # Here we check if the value of each permission is True.
-    perms = '\n'.join(perm for perm, value in member.guild_permissions if value)
-    # And to make it look nice, we wrap it in an Embed.
-    embed = discord.Embed(title='Permissions for:', description=ctx.guild.name, colour=member.colour)
-    embed.set_author(icon_url=member.avatar_url, name=str(member))
-    # \uFEFF is a Zero-Width Space, which basically allows us to have an empty field name.
-    embed.add_field(name='\uFEFF', value=perms)
-    await ctx.send(content=None, embed=embed)
 
 @bot.event
 async def on_ready():
@@ -96,16 +80,25 @@ async def on_ready():
     )
     await bot.change_presence(
         activity=discord.Game(
-            name=f"Hi, my names {bot.user.name}.\nUse - to interact with me!"
+            name="Waves in brail"
         )
     )  # This changes the bots 'activity'
 
     bot.mongo = motor.motor_asyncio.AsyncIOMotorClient(str(bot.connection_url))
     bot.db = bot.mongo["menudocs"]
     bot.config = Document(bot.db, "config")
-    print("Initialized Database\n-----")
+    bot.mutes = Document(bot.db, "mutes")
+
     for document in await bot.config.get_all():
         print(document)
+
+    currentMutes = await bot.mutes.get_all()
+    for mute in currentMutes:
+        bot.muted_users[mute["_id"]] = mute
+
+    print(bot.muted_users)
+
+    print("Initialized Database\n-----")
 
 
 @bot.event
@@ -120,8 +113,8 @@ async def on_message(message):
         return
 
     # Whenever the bot is tagged, respond with its prefix
-    if message.content.startswith(f"<@!{bot.user.id}>") and \
-        len(message.content) == len(f"<@!{bot.user.id}>"
+    if message.content.startswith(f"<@!{bot.user.id}>") and len(message.content) == len(
+        f"<@!{bot.user.id}>"
     ):
         data = await bot.config.get_by_id(message.guild.id)
         if not data or "prefix" not in data:
