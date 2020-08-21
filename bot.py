@@ -20,33 +20,38 @@ print(f"{cwd}\n-----")
 async def get_prefix(bot, message):
     # If dm's
     if not message.guild:
-        return commands.when_mentioned_or("!")(bot, message)
+        return commands.when_mentioned_or(bot.DEFAULTPREFIX)(bot, message)
 
     try:
         data = await bot.config.find(message.guild.id)
 
         # Make sure we have a useable prefix
         if not data or "prefix" not in data:
-            return commands.when_mentioned_or("!")(bot, message)
+            return commands.when_mentioned_or(bot.DEFAULTPREFIX)(bot, message)
         return commands.when_mentioned_or(data["prefix"])(bot, message)
     except:
-        return commands.when_mentioned_or("!")(bot, message)
+        return commands.when_mentioned_or(bot.DEFAULTPREFIX)(bot, message)
 
 
 # Defining a few things
+DEFAULTPREFIX = '!'
 secret_file = utils.json_loader.read_json("secrets")
 bot = commands.Bot(
-    command_prefix="-", case_insensitive=True, owner_id=271612318947868673
+    command_prefix=get_prefix,
+    case_insensitive=True,
+    owner_id=271612318947868673,
+    help_command=None
 )  # change command_prefix='-' to command_prefix=get_prefix for custom prefixes
 bot.config_token = secret_file["token"]
 bot.connection_url = secret_file["mongo"]
 logging.basicConfig(level=logging.INFO)
 
+bot.DEFAULTPREFIX = DEFAULTPREFIX
 bot.blacklisted_users = []
 bot.muted_users = {}
 bot.cwd = cwd
 
-bot.version = "14"
+bot.version = "15"
 
 bot.colors = {
     "WHITE": 0xFFFFFF,
@@ -76,7 +81,7 @@ bot.color_list = [c for c in bot.colors.values()]
 async def on_ready():
     # On ready, print some details to standard out
     print(
-        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: -\n-----"
+        f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: {bot.DEFAULTPREFIX}\n-----"
     )
     await bot.change_presence(
         activity=discord.Game(
@@ -118,7 +123,7 @@ async def on_message(message):
     ):
         data = await bot.config.get_by_id(message.guild.id)
         if not data or "prefix" not in data:
-            prefix = "!"
+            prefix = bot.DEFAULTPREFIX
         else:
             prefix = data["prefix"]
         await message.channel.send(f"My prefix here is `{prefix}`", delete_after=15)
