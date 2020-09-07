@@ -44,6 +44,9 @@ bot = commands.Bot(
 )  # change command_prefix='-' to command_prefix=get_prefix for custom prefixes
 bot.config_token = secret_file["token"]
 bot.connection_url = secret_file["mongo"]
+
+bot.joke_api_key = secret_file["x-rapidapi-key"]
+
 logging.basicConfig(level=logging.INFO)
 
 bot.DEFAULTPREFIX = DEFAULTPREFIX
@@ -51,7 +54,7 @@ bot.blacklisted_users = []
 bot.muted_users = {}
 bot.cwd = cwd
 
-bot.version = "15"
+bot.version = "16"
 
 bot.colors = {
     "WHITE": 0xFFFFFF,
