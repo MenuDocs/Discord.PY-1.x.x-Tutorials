@@ -52,6 +52,6 @@ embed.set_image(
 )
 image = discord.File("hello.png")
 await ctx.send(
-    embed=embed
+    embed=embed,
     file=image
 )
