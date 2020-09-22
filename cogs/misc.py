@@ -1,3 +1,4 @@
+import asyncio
 import platform
 
 import discord
@@ -43,12 +44,29 @@ class Misc(commands.Cog):
     @commands.command(
         name="echo",
         description="A simple command that repeats the users input back to them.",
-        usage="[Message]",
     )
-    async def echo(self, ctx, *, message=None):
-        message = message or "Please provide the message to be repeated."
+    async def echo(self, ctx):
         await ctx.message.delete()
-        await ctx.send(message)
+        embed = discord.Embed(
+            title="Please tell me what you want me to repeat!",
+            description="||This request will timeout after 1 minute||"
+        )
+        sent = await ctx.send(embed=embed)
+
+        try:
+            msg = await self.bot.wait_for(
+                "message",
+                timeout=10,
+                check=lambda message: message.author == ctx.author
+                                      and message.channel == ctx.channel
+            )
+            if msg:
+                await sent.delete()
+                await msg.delete()
+                await ctx.send(msg.content)
+        except asyncio.TimeoutError:
+            await sent.delete()
+            await ctx.send("Cancelling due to timeout.", delete_after=10)
 
 
 def setup(bot):
