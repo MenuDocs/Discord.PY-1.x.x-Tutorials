@@ -56,7 +56,7 @@ class Misc(commands.Cog):
         try:
             msg = await self.bot.wait_for(
                 "message",
-                timeout=10,
+                timeout=60,
                 check=lambda message: message.author == ctx.author
                                       and message.channel == ctx.channel
             )
