@@ -34,17 +34,18 @@ async def get_prefix(bot, message):
 
 
 # Defining a few things
-DEFAULTPREFIX = '!'
+DEFAULTPREFIX = "!"
 secret_file = utils.json_loader.read_json("secrets")
 bot = commands.Bot(
     command_prefix=get_prefix,
     case_insensitive=True,
     owner_id=271612318947868673,
-    help_command=None
+    help_command=None,
 )  # change command_prefix='-' to command_prefix=get_prefix for custom prefixes
 bot.config_token = secret_file["token"]
 bot.connection_url = secret_file["mongo"]
 
+bot.news_api_key = secret_file["news api"]
 bot.joke_api_key = secret_file["x-rapidapi-key"]
 
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +55,7 @@ bot.blacklisted_users = []
 bot.muted_users = {}
 bot.cwd = cwd
 
-bot.version = "16"
+bot.version = "15"
 
 bot.colors = {
     "WHITE": 0xFFFFFF,
@@ -87,15 +88,8 @@ async def on_ready():
         f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: {bot.DEFAULTPREFIX}\n-----"
     )
     await bot.change_presence(
-        activity=discord.Game(
-            name="Waves in brail"
-        )
+        activity=discord.Game(name="Waves in brail")
     )  # This changes the bots 'activity'
-
-    bot.mongo = motor.motor_asyncio.AsyncIOMotorClient(str(bot.connection_url))
-    bot.db = bot.mongo["menudocs"]
-    bot.config = Document(bot.db, "config")
-    bot.mutes = Document(bot.db, "mutes")
 
     for document in await bot.config.get_all():
         print(document)
@@ -137,6 +131,12 @@ async def on_message(message):
 if __name__ == "__main__":
     # When running this file, if it is the 'main' file
     # I.E its not being imported from another python file run this
+    bot.mongo = motor.motor_asyncio.AsyncIOMotorClient(str(bot.connection_url))
+    bot.db = bot.mongo["menudocs"]
+    bot.config = Document(bot.db, "config")
+    bot.mutes = Document(bot.db, "mutes")
+    bot.invites = Document(bot.db, "invites")
+
     for file in os.listdir(cwd + "/cogs"):
         if file.endswith(".py") and not file.startswith("_"):
             bot.load_extension(f"cogs.{file[:-3]}")
