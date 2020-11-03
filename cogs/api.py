@@ -23,6 +23,7 @@ class API(commands.Cog):
         async with ClientSession() as session:
             async with session.get(url, headers=headers) as response:
                 r = await response.json()
+                r = r["body"][0]
                 await ctx.send(f"**{r['setup']}**\n\n||{r['punchline']}||")
 
 
