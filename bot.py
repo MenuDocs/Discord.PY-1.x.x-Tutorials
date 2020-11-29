@@ -137,6 +137,7 @@ if __name__ == "__main__":
     bot.config = Document(bot.db, "config")
     bot.mutes = Document(bot.db, "mutes")
     bot.invites = Document(bot.db, "invites")
+    bot.command_usage = Document(bot.db, "command_usage")
 
     for file in os.listdir(cwd + "/cogs"):
         if file.endswith(".py") and not file.startswith("_"):
