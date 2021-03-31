@@ -161,6 +161,8 @@ class Reactions(commands.Cog, name="ReactionRoles"):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         data = await self.bot.config.find(payload.guild_id)
+        
+        rr_message_id = data.get("message_id")
 
         if not payload.guild_id or not data or not data.get("is_enabled"):
             return
@@ -176,12 +178,24 @@ class Reactions(commands.Cog, name="ReactionRoles"):
 
         member = await guild.fetch_member(payload.user_id)
 
-        if role not in member.roles:
-            await member.add_roles(role, reason="Reaction role.")
+        if payload.message_id == rr_message_id:
+            if role not in member.roles:
+                await member.add_roles(role, reason="Reaction role.")
+                try:
+                    # This sends a message to the user informing them of the role that was removed!
+                    await member.send(f"You have been given the {role} role!")
+                except discord.Forbidden:
+                    # If their dms are disabled or if they have the bot blocked, or some other miscellaneous reason!
+                    return
+        else:
+            # This means the message the user reacted to didn't match the DB record!
+            return
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
         data = await self.bot.config.find(payload.guild_id)
+        
+        rr_message_id = data.get("message_id")
 
         if not payload.guild_id or not data or not data.get("is_enabled"):
             return
@@ -197,8 +211,18 @@ class Reactions(commands.Cog, name="ReactionRoles"):
 
         member = await guild.fetch_member(payload.user_id)
 
-        if role in member.roles:
-            await member.remove_roles(role, reason="Reaction role.")
+        if payload.message_id == rr_message_id:
+            if role in member.roles:
+                await member.remove_roles(role, reason="Reaction role.")
+                try:
+                    # This sends a message to the user informing them of the role that was removed!
+                    await member.send(f"The {role} role has been removed from you as requested!")
+                except discord.Forbidden:
+                    # If their dms are disabled or if they have the bot blocked, or some other miscellaneous reason!
+                    return
+        else:
+            # This means the message the user reacted to didn't match the DB record!
+            return
 
 
 def setup(bot):
