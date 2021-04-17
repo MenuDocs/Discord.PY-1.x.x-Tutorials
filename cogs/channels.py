@@ -11,8 +11,9 @@ class Channels(commands.Cog):
     def our_custom_check():
         async def predicate(ctx):
             return ctx.guild is not None \
-                and ctx.author.guild_permissions.manage_channels \
-                and ctx.me.guild_permissions.manage_channels
+                   and ctx.author.guild_permissions.manage_channels \
+                   and ctx.me.guild_permissions.manage_channels
+
         return commands.check(predicate)
 
     @commands.Cog.listener()
@@ -54,6 +55,7 @@ class Channels(commands.Cog):
             value=channel.permissions_synced,
             inline=False,
         )
+        # noinspection PyTypeChecker
         embed.add_field(name="Channel Hash", value=hash(channel), inline=False)
 
         await ctx.send(embed=embed)
@@ -128,15 +130,15 @@ class Channels(commands.Cog):
     async def lockdown(self, ctx, channel: discord.TextChannel = None):
         channel = channel or ctx.channel
         if ctx.guild.default_role not in channel.overwrites:
-            # This is the same as the elif except it handles agaisnt empty overwrites dicts
+            # This is the same as the elif except it handles against empty overwrites dicts
             overwrites = {
                 ctx.guild.default_role: discord.PermissionOverwrite(send_messages=False)
             }
             await channel.edit(overwrites=overwrites)
             await ctx.send(f"I have put {channel.name} on lockdown.")
         elif (
-            channel.overwrites[ctx.guild.default_role].send_messages == True
-            or channel.overwrites[ctx.guild.default_role].send_messages == None
+                channel.overwrites[ctx.guild.default_role].send_messages == True
+                or channel.overwrites[ctx.guild.default_role].send_messages is None
         ):
             overwrites = channel.overwrites[ctx.guild.default_role]
             overwrites.send_messages = False
