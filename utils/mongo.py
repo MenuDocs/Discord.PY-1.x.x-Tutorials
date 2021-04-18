@@ -13,9 +13,6 @@ class Document:
         self.db = connection[document_name]
 
     # <-- Pointer Methods -->
-    async def get_by_id(self, data_id):
-        return await self.find_by_id(data_id)
-
     async def find(self, data_id):
         return await self.find_by_id(data_id)
 
