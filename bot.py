@@ -125,7 +125,7 @@ async def on_message(message):
     if message.content.startswith(f"<@!{bot.user.id}>") and len(message.content) == len(
         f"<@!{bot.user.id}>"
     ):
-        data = await bot.config.get_by_id(message.guild.id)
+        data = await bot.config.find_by_id(message.guild.id)
         if not data or "prefix" not in data:
             prefix = bot.DEFAULTPREFIX
         else:
@@ -138,6 +138,7 @@ async def on_message(message):
 @bot.command(name="eval", aliases=["exec"])
 @commands.is_owner()
 async def _eval(ctx, *, code):
+    await ctx.reply("Let me evaluate this code for you! Won't be a sec")
     code = clean_code(code)
 
     local_variables = {
@@ -148,7 +149,7 @@ async def _eval(ctx, *, code):
         "channel": ctx.channel,
         "author": ctx.author,
         "guild": ctx.guild,
-        "message": ctx.message
+        "message": ctx.message,
     }
 
     stdout = io.StringIO()
@@ -166,10 +167,10 @@ async def _eval(ctx, *, code):
 
     pager = Pag(
         timeout=100,
-        entries=[result[i: i + 2000] for i in range(0, len(result), 2000)],
+        entries=[result[i : i + 2000] for i in range(0, len(result), 2000)],
         length=1,
         prefix="```py\n",
-        suffix="```"
+        suffix="```",
     )
 
     await pager.start(ctx)
@@ -182,6 +183,7 @@ if __name__ == "__main__":
     bot.db = bot.mongo["menudocs"]
     bot.config = Document(bot.db, "config")
     bot.mutes = Document(bot.db, "mutes")
+    bot.warns = Document(bot.db, "warns")
     bot.invites = Document(bot.db, "invites")
     bot.command_usage = Document(bot.db, "command_usage")
     bot.reaction_roles = Document(bot.db, "reaction_roles")
