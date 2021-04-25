@@ -9,6 +9,8 @@ on init and the document to create an instance on and boom
 
 
 class Document:
+    _version = 3  # A flag for use during help
+
     def __init__(self, connection, document_name):
         self.db = connection[document_name]
 
