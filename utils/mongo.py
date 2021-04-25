@@ -110,10 +110,10 @@ class Document:
         await self.db.update_one({"_id": data_id}, {"$unset": data})
 
     async def increment(self, data_id, amount, field):
-        if await self.find_by_id("_id") is None:
+        if await self.find_by_id(data_id) is None:
             return
 
-        self.db.update_one({"_id": data_id}, {"$inc": {field: amount}})
+        await self.db.update_one({"_id": data_id}, {"$inc": {field: amount}})
 
     # <-- Private methods -->
     async def __get_raw(self, data_id):
@@ -121,10 +121,8 @@ class Document:
 
     @staticmethod
     def __ensure_dict(data):
-        if not isinstance(data, collections.abc.Mapping):
-            raise TypeError(f"Expected Dictionary, given {data.__class__}")
+        assert isinstance(data, collections.abc.Mapping)
 
     @staticmethod
     def __ensure_id(data):
-        if not data["_id"]:
-            raise KeyError("_id not found in supplied dict")
+        assert "_id" in data
