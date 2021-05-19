@@ -40,7 +40,7 @@ class Warns(commands.Cog):
         
         try:
             await member.send(embed=embed)
-            await ctx.send("Warned that user in dm's")
+            await ctx.send("Warned that user in dm's for you.")
         except discord.HTTPException:
             await ctx.send(member.mention, embed=embed)
             
@@ -62,7 +62,7 @@ class Warns(commands.Cog):
             Warn Number: `{warn['number']}`
             Warn Reason: `{warn['reason']}`
             Warned By: <@{warn['warned_by']}>
-            Warn Number: {warn['timestamp'].strftime("%I:%M %p %B %d, %Y")}
+            Warn Date: {warn['timestamp'].strftime("%I:%M %p %B %d, %Y")}
             """
             pages.append(description)
         
@@ -72,6 +72,30 @@ class Warns(commands.Cog):
             entries=pages,
             length=1
         ).start(ctx)
+
+    @commands.command(aliases=["delwarn", "dw"])
+    @commands.has_role(566132980687568896)
+    @commands.guild_only()
+    async def deletewarn(self, ctx, member: discord.Member, warn: int = None):
+        """Delete a warn / all warns from a given member"""
+        filter_dict = {"user_id": member.id, "guild_id": member.guild.id}
+        if warn:
+            filter_dict["number"] = warn
+
+        was_deleted = await self.bot.warns.delete_by_custom(filter_dict)
+        if was_deleted and was_deleted.acknowledged:
+            if warn:
+                return await ctx.send(
+                    f"I deleted warn number `{warn}` for `{member.display_name}`"
+                )
+
+            return await ctx.send(
+                f"I deleted `{was_deleted.deleted_count}` warns for `{member.display_name}`"
+            )
+
+        await ctx.send(
+            f"I could not find any warns for `{member.display_name}` to delete matching your input"
+        )
 
 
 def setup(bot):
