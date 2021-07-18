@@ -7,7 +7,7 @@
 
 ## About
 
-Repository for the [Discord.py Turorials](https://www.youtube.com/watch?v=tyRMklcm2oA&list=PLWnw41ah3I4Z3pJ3_IzohfSu4A1x37KeE) series on [MenuDocs](https://www.youtube.com/channel/UCpGGFqJP9vYvzFudqnQ-6IA).
+Repository for the [Discord.py Tutorials](https://www.youtube.com/watch?v=tyRMklcm2oA&list=PLWnw41ah3I4Z3pJ3_IzohfSu4A1x37KeE) series on [MenuDocs](https://www.youtube.com/channel/UCpGGFqJP9vYvzFudqnQ-6IA).
 
 > Each episode has its own branch in this repo.
 
